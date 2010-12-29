@@ -2,7 +2,7 @@
 /* 
     DetectMouseOverDisabled - A jQuery plugin
     ==================================================================
-    ©2010 JasonLau.biz - Version 1.0.2
+    ©2010 JasonLau.biz - Version 1.0.3
     ==================================================================
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,7 +24,8 @@
  		detectmouseoverdisabled: function(options) {
 			var defaults = {
 			    tag : 'div',
-                ext : '-mask'    
+                ext : '-mask',
+                ele : 'input, textarea, select'    
 			}
 				
 			var option =  $.extend(defaults, options);
@@ -33,7 +34,7 @@
     		return this.each(function() {
     		  var img = make_glif(1, 1, 1, 255); // fixes inconsistent cross-browser behavior
     		  $(document).bind('mousemove', function(e) {
-    		      $("input, textarea, select").each(function() {
+    		      $(option.ele).each(function() {
     		          if($(this).is(':disabled')) {
     		              if(!$("#" + $(this).attr('id') + option.ext).attr('id')){
     		                  var pos = $(this).position();
