@@ -20,35 +20,37 @@
 */
 
 (function($){
- 	$.fn.extend({ 
- 		detectmouseoverdisabled: function(options) {
-			var defaults = {
-			    tag : 'div',
-                ext : '-mask',
-                ele : 'input, textarea, select'    
-			}
-				
-			var option =  $.extend(defaults, options);
-            var obj = $(this);
+  $.fn.extend({ 
+    detectmouseoverdisabled: function(options) {
+      var defaults = {
+          tag : 'div',
+          ext : '-mask',
+          ele : 'input, textarea, select'    
+      }
+        
+      var option =  $.extend(defaults, options);
+      var obj = $(this);
 
-    		return this.each(function() {
-    		  var img = make_glif(1, 1, 1, 255); // fixes inconsistent cross-browser behavior
-    		  $(document).bind('mousemove', function(e) {
-    		      $(option.ele).each(function() {
-    		          if($(this).is(':disabled')) {
-    		              if(!$("#" + $(this).attr('id') + option.ext).attr('id')){
-    		                  var pos = $(this).position();
-                              $(this).after('<' + option.tag + ' id="' + $(this).attr('id') + option.ext + '" style="position:absolute; top:' + pos.top + 'px; left:' + pos.left + 'px; width:' + $(this).outerWidth() + 'px; height:' + $(this).outerHeight() + 'px;"><img src="'+img+'" alt="" width="100%" height="100%" border="0px"></' + option.tag + '>'); 
-                         }
-                       } else {
-                        try{
-                            $("#" + $(this).attr('id') + option.ext).remove();
-                            }catch(e){}
-                       }
-                    });
-				});                
-    		});            
-    	
+      return this.each(function() {
+        var img = make_glif(1, 1, 1, 255); // fixes inconsistent cross-browser behavior
+        $(document).bind('mousemove', function(e) {
+            $(option.ele).each(function() {
+              var $this=$(this);
+              if($this.prop('disabled')) {
+                if(!$("#" + this.id + option.ext).attr('id')){
+                  var pos = $this.position();
+                  var height=$this.outerHeight();
+                  $this.after('<div style="position:relative"><' + option.tag + ' id="' + this.id + option.ext + '" style="position:absolute; top:-' + height + 'px; left:0; width:' + $this.outerWidth() + 'px; height:' + height + 'px;"><img src="'+img+'" alt="" width="100%" height="100%" border="0px"></' + option.tag + '></div>'); 
+                }
+              } else {
+                try{
+                  $("#" + this.id + option.ext).remove();
+                }catch(e){}
+              }
+            });
+        });                
+      });            
+      
         
         
 // glif, a client-side image generator in javascript
@@ -141,6 +143,6 @@ function make_glif(w,h,d,fr,fg,fb) {
 }
 // end
    }     
-	});	
+  }); 
 })(jQuery);
  -->
