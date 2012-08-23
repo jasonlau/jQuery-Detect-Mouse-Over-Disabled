@@ -1,8 +1,7 @@
-<!-- 
-/* 
+/*!
     DetectMouseOverDisabled - A jQuery plugin
     ==================================================================
-    ©2010 JasonLau.biz - Version 1.0.3
+    ©2010 JasonLau.biz - Version 1.0.5
     ==================================================================
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,7 +15,6 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-    
 */
 
 (function($){
@@ -29,28 +27,37 @@
       }
         
       var option =  $.extend(defaults, options);
-      var obj = $(this);
-
-      return this.each(function() {
-        var img = make_glif(1, 1, 1, 255); // fixes inconsistent cross-browser behavior
-        $(document).bind('mousemove', function(e) {
-            $(option.ele).each(function() {
-              var $this=$(this);
-              if($this.prop('disabled')) {
-                if(!$("#" + this.id + option.ext).attr('id')){
-                  var pos = $this.position();
-                  var height=$this.outerHeight();
-                  $this.after('<div style="position:relative"><' + option.tag + ' id="' + this.id + option.ext + '" style="position:absolute; top:-' + height + 'px; left:0; width:' + $this.outerWidth() + 'px; height:' + height + 'px;"><img src="'+img+'" alt="" width="100%" height="100%" border="0px"></' + option.tag + '></div>'); 
-                }
-              } else {
-                try{
-                  $("#" + this.id + option.ext).remove();
-                }catch(e){}
-              }
-            });
-        });                
-      });            
-      
+      var hasDisabledElements=false; // we'll use it for compatibility reason with older version of this script
+      // we want to find the width of the elements, even if they are hidden
+      var getWidth=function(obj){
+          var clone = obj.clone();
+          clone.css("visibility","hidden");
+          $('body').append(clone);
+          var width = clone.outerWidth();
+          clone.remove();
+          return width;
+      }
+      // now we define the trick
+      var proceed = function(elements) {
+        return elements.each(function() {
+          var $this=$(this);
+          // check if the element passed is DISABLED
+          if($this.prop('disabled')) {
+            hasDisabledElements=true;
+            var img = make_glif(1, 1, 1, 255); // fixes inconsistent cross-browser behavior
+            // create the DIV element for the trick
+            var pos = $this.position();
+            var height=$this.outerHeight();
+            // we want it to be with a relative position (in case of the element would be hidden during the initialization phase)
+            // we wrap it with another DIV for this reason : http://jasonseale.hubpages.com/hub/Relative-Positioning-Leave-Blank-White-Space-on-Webpage
+            $this.after('<div style="position:relative"><' + option.tag + ' id="' + this.id + option.ext + '" style="position:absolute; top:-' + height + 'px; left:0; width:' + getWidth($this) + 'px; height:' + height + 'px;"><img src="'+img+'" alt="" width="100%" height="100%" border="0px"></' + option.tag + '></div>'); 
+          }
+        });
+      };
+      // for compatibility with older version
+      var ret=proceed($(this));
+      if (!hasDisabledElements) ret=proceed($(this).find(option.ele));
+      return ret;
         
         
 // glif, a client-side image generator in javascript
@@ -144,5 +151,4 @@ function make_glif(w,h,d,fr,fg,fb) {
 // end
    }     
   }); 
-})(jQuery);
- -->
+})(jQuery); 
